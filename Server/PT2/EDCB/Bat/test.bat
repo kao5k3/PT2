@@ -2,7 +2,17 @@
 
 set RECPOST="%~dp0\RecPost.pl"
 
-set FILEPATH="D:\Videos\テレビ\麒麟（きりん）がくる　（１）「光秀、西へ」.ts"
+set FILEPATH="D:\Videos\テレビ\モンスター 最終決戦！環境汚染訴訟でリベンジマッチ！父親をぶっ潰せ！ ＃１０.ts"
+set ADDKEY="モンスター"
+set GENRE="ドラマ"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\ザ・トラベルナース ＃８.ts"
+set ADDKEY="ザ・トラベルナース"
+set GENRE="ドラマ"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\麒麟（きりん）がくる　（１２）「光秀、西へ」.ts"
 set ADDKEY="麒麟（きりん）がくる"
 set GENRE="ドラマ"
 call :SubRoutine

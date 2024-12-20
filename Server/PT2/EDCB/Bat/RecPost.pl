@@ -110,17 +110,22 @@ sub get_outfile_name {
 	my $outdir_path = shift;
 	my $title_mode = shift;
 	my $renban_mode = shift;
-	
+
+	# 拡張子を取る
+	$infile_name =~ s/\.ts$//;
+
 	# ディスカバリーによくある "(二)" が邪魔なので消去
-	$infile_name =~ s/\(二\).ts$/.ts/;
+	$infile_name =~ s/\(二\)$//;
 	
 	# ディスカバリーで稀にある "(日)" も邪魔なので消去
-	$infile_name =~ s/\(日\).ts$/.ts/;
-	
+	$infile_name =~ s/\(日\)$//;
+
 	# ファイル名からタイトルを抽出
 	my $title = "";
 	if ($title_mode) {
 		$title = &extract_title($infile_name, $addkey);
+		# 話数は削除
+		$title = delete_episode_number($title);
 	}
 	
 	# ファイル名から連番を抽出
@@ -131,22 +136,19 @@ sub get_outfile_name {
 	
 	# タイトルと連番が揃っている時
 	if ($title && $renban) {
-		$title = &delete_episode_number($title);
-		$title = " " . $title if ($title);
-		return sprintf("#%02d%s.ts", $renban, $title);
+		$title = $addkey unless ($title);
+		return sprintf("#%02d %s.ts", $renban, $title);
 	}
 	# タイトルだけの時
 	if ($title) {
-		my $tmp = &delete_episode_number($title);
-		$title = $tmp if ($tmp);
 		return $title . '.ts';
 	}
 	# 連番だけの時
 	if ($renban) {
 		return sprintf("#%02d.ts", $renban);
 	}
-	# その他: 変更しない
-	return $infile_name;
+	# その他: 何もしない
+	return &ztoh($infile_name) . '.ts';
 }
 	
 # ファイルを保存先に移動する
@@ -320,13 +322,7 @@ sub ztoh {
 sub extract_title {
 	my $title = shift;
 	my $addkey = shift;
-	
-	# ファイル名から拡張子を取る
-	$title =~ s/\.ts$//;
-	
-	# ディスカバリーによくある "(二)" が邪魔なので消去
-	$title =~ s/\(二\)$//;
-	
+
 	# 半角と全角が混ざっていると面倒なので半角にする
 	$title = &ztoh($title);
 	$addkey = &ztoh($addkey);
@@ -335,11 +331,14 @@ sub extract_title {
 	$title = &safe_string($title);
 	$addkey = &safe_string($addkey);
 	
-	# addkey 部分を誤検出しないよう予め排除
+	# 副題は addkey の後ろにあると想定し前部分を排除
 	if ($title =~ /$addkey[」】！？～＞：　 \s]*(.+)/) {
 		$title = $1;
 	}
 	
+	# 話数を削除
+	$title = &delete_episode_number($title);
+
 	# 括弧があればその中身を副題として抜き出す
 	if ($title =~ /[「【](.*)/) {
 		my $tmp = $1;
@@ -353,21 +352,14 @@ sub extract_title {
 		}
 	}
 	
-	#  ：（コロン）／（スラッシュ） ▽ がある場合、その後ろを副題として抜き出す
-	if ($title =~ /[：／▽](.*)/) {
+	#  ：（コロン）／（スラッシュ） ▽ ▼がある場合、その後ろを副題として抜き出す
+	if ($title =~ /[：／▽▼](.*)/) {
 		return $1;
 	}
 	
-	# 連番(#○○)以後を副題として抜き出す
-	if ($title =~ /(\#\d+[　\s]*.*)/) {
-		return $1;
-	}
-	
-	# 話数(第○回 とか 第○話)以後を副題として抜き出す
-	if ($title =~ /(第\d+[回話][　\s]*.*)/) {
-		return $1;
-	}
-	
+	# 副題が抽出できなかった場合は addkey を副題とする
+	$title = $addkey unless ($title);
+
 	return $title;
 }
 
@@ -375,19 +367,19 @@ sub extract_title {
 sub extract_episode_number {
 	my $infile_name = shift;	
 	my $outdir_path = shift;
-	
-	# 全角と半角が混ざってると面倒なので半角にする
-	$infile_name = &ztoh($infile_name);
 
-	# ファイル名に連番(#○○)がついていないか調査する
+	# 半角と全角が混ざっていると面倒なので半角にする
+	$infile_name = &ztoh($infile_name);
+	
+	# ファイル名に連番(#○○)がついているパターン
 	if ($infile_name =~ /\#[0]*(\d+)/) {
 		return $1 + 0;
 	}
-	# 第○回 とか 第○話 のパターンを考慮
-	if ($infile_name =~ /第[0]*(\d+)[回話]/) {
+	# 第○回 とか 第○話 のパターン
+	if ($infile_name =~ /第[0]*(\d+)[回話集]/) {
 		return $1 + 0;
 	}
-	# 朝ドラによくある （１２３） みたいなのを考慮
+	# 朝ドラによくある （１２３） みたいなパターン
 	if ($infile_name =~ /（(\d+)）/) {
 		return $1 + 0;
 	}
@@ -410,12 +402,15 @@ sub extract_episode_number {
 sub delete_episode_number {
 	my $title = shift;
 	$title =~ s/^[＃\#][０１２３４５６７８９\d]+[　\s]*//;
-	$title =~ s/^第[０１２３４５６７８９\d]+[回話][　\s]*//;
-	$title =~ s/^（[０１２３４５６７８９\d]+）[　\s]*//;
+	$title =~ s/[　\s]+[＃\#][０１２３４５６７８９\d]+[　\s]*//;
+	$title =~ s/^第[０１２３４５６７８９零〇一二三四五六七八九十\d]+[回話集][　\s]*//;
+	$title =~ s/[　\s]+第[０１２３４５６７８９零〇一二三四五六七八九十\d]+[回話集][　\s]*//;
+	$title =~ s/^（[０１２３４５６７８９零〇一二三四五六七八九十\d]+）[　\s]*//;
+	$title =~ s/[　\s]+（[０１２３４５６７８９零〇一二三四五六七八九十\d]+）[　\s]*//;
 	return $title;
 }	
 
-# バッチファイルを生成
+# バッチファイルを生成〇〇
 sub generate_batch_files {
 	my $self = shift;
 	my @genre = ('アニメ','スポーツ','ドラマ','バラエティ','ワイドショー','映画','音楽','教養','趣味');
