@@ -1,6 +1,46 @@
 @echo off
 
-set RECPOST="%~dp0\RecPost.pl"
+set RECPOST="%~dp0\RecPost.py"
+
+set FILEPATH="D:\Videos\テレビ\放課後カルテ 最終回　卒業の涙…保健室去る牧野先生から子ども達へ最後の言葉.ts"
+set ADDKEY="放課後カルテ"
+set GENRE="ドラマ"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\今日から俺は!! #4 「大恋愛が加速！？先生どうして人を好きになるんですか？」.ts"
+set ADDKEY="今日から俺は!!"
+set GENRE="ドラマ"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\フラエジ「私をもらって～恋路編～」#4▼儚いラブストーリー第2章.ts"
+set ADDKEY="私をもらって～恋路編～"
+set GENRE="ドラマ"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\映像の世紀バタフライエフェクト　ナチ親衛隊　狂気の実行者たち.ts"
+set ADDKEY="映像の世紀バタフライエフェクト"
+set GENRE="教養"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\ＭＦゴースト　２ｎｄ　Ｓｅａｓｏｎ　★Ｔｕｒｎ２２「ザ・ペニンシュラ開幕」.ts"
+set ADDKEY="MFゴースト"
+set GENRE="アニメ"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\ブラタモリ　東海道“五十七次”の旅▼第三夜　ついにゴールの大阪へ！.ts"
+set ADDKEY="ブラタモリ"
+set GENRE="教養"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\＜木曜劇場＞わたしの宝物【最終回！托卵から始まった物語の結末は…】　＃１０.ts"
+set ADDKEY="わたしの宝物"
+set GENRE="ドラマ"
+call :SubRoutine
+
+set FILEPATH="D:\Videos\テレビ\金曜ドラマ「ライオンの隠れ家」　第１１話【僕たちの新しい始まり】.ts"
+set ADDKEY="ライオンの隠れ家"
+set GENRE="ドラマ"
+call :SubRoutine
 
 set FILEPATH="D:\Videos\テレビ\モンスター 最終決戦！環境汚染訴訟でリベンジマッチ！父親をぶっ潰せ！ ＃１０.ts"
 set ADDKEY="モンスター"
@@ -14,11 +54,6 @@ call :SubRoutine
 
 set FILEPATH="D:\Videos\テレビ\麒麟（きりん）がくる　（１２）「光秀、西へ」.ts"
 set ADDKEY="麒麟（きりん）がくる"
-set GENRE="ドラマ"
-call :SubRoutine
-
-set FILEPATH="D:\Videos\テレビ\金曜ドラマ「凪のお暇」（なぎのおいとま） 第０７話.ts"
-set ADDKEY="凪のお暇"
 set GENRE="ドラマ"
 call :SubRoutine
 
@@ -49,6 +84,7 @@ call :SubRoutine
 
 set FILEPATH="D:\Video\名車再生！クラシックカー・ディーラーズ：新コンビ舞台裏(二).ts"
 set ADDKEY="名車再生"
+set GENRE="趣味"
 call :SubRoutine
 
 set FILEPATH="D:\Videos\テレビ\３年Ａ組　－今から皆さんは、人質です－#04事件は核心へー。必見の第4話.ts"
@@ -92,14 +128,14 @@ rem ============================================================================
 
 :SubRoutine
 
-echo ●シリーズ
-perl %RECPOST% -f %FILEPATH% -a %ADDKEY% -g %GENRE% -s --debug
+echo ●ジャンル
+%RECPOST% -f %FILEPATH% -g %GENRE% -s --debug
 
-echo ●シリーズ_副題
-perl %RECPOST% -f %FILEPATH% -a %ADDKEY% -g %GENRE% -s -t --debug
+echo ●ジャンル＋シリーズ＋副題
+%RECPOST% -f %FILEPATH% -a %ADDKEY% -g %GENRE% -s -t --debug
 
-echo ●シリーズ_連番＋副題
-perl %RECPOST% -f %FILEPATH% -a %ADDKEY% -g %GENRE% -s -t -r --debug
+echo ●ジャンル＋シリーズ＋連番＋副題
+%RECPOST% -f %FILEPATH% -a %ADDKEY% -g %GENRE% -s -t -r --debug
 
 set /p stdin="type any key to continue>"
 exit /b

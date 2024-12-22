@@ -1,5 +1,5 @@
 # これは何？
-EDCBで録画後に実行する Perlスクリプト。一度うっかりローカルにあるファイルを消してしまって痛い目を見たのでバックアップ代わりに github に登録。
+EDCBで録画後に実行するスクリプト。一度うっかりローカルにあるファイルを消してしまって痛い目を見たのでバックアップ代わりに github に登録。
 
 # 機能
 * ジャンル（アニメ,スポーツ,ドラマ,バラエティ,映画,音楽,教養,趣味）でサブフォルダ分け。
@@ -46,21 +46,14 @@ EDCBで録画後に実行する Perlスクリプト。一度うっかりロー�
     　↓      
     \Path\To\Video\スポーツ\速報！MotoGP\第13戦サンマリノGP.ts
 
-* EDCB からこのスクリプトを呼び出すためのバッチを自動生成
- 
 # 動作確認環境
 * Windows 7 Pro, Windows 10 Pro
-* ActivePerl 5.26.3, Strawberry Perl 5.30.0.1
+* Python 3.13.1
 * EpgTimer(xtne6f版)
 
 # インストール
-* Perl をインストール
-* EDCB フォルダの下に Bat というサブフォルダを掘って RecPost.pl を奥く
-* RecPost.pl 内の以下のパスを RecPost.pl を置いたパスに合わせて変更
-
-    	my $self_path = 'C:\PT2\EDCB\Bat\RecPost.pl';
-
-* RecPost.pl をダブルクリックして実行（EDCBからこのスクリプトを呼び出すバッチが生成される）
+* Python3 をインストール
+* EDCB フォルダの下に Bat というサブフォルダを掘ってこのフォルダの中身を配置
 * EDCB(EpgTimer)を再起動
 
 # 使い方
