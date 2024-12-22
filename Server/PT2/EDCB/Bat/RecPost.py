@@ -106,9 +106,10 @@ def extract_episode_number(infile_name, outdir_path):
 # ファイル名から副題っぽい部分を抽出する
 def extract_subtitle(infile_name, addkey):
     # 副題は addkey の後ろにあると想定し前部分を排除
-    match = re.search(rf"{addkey}[」】！？～＞：　 \s]*(.+)", infile_name)
-    if match:
-        infile_name = match.group(1)
+    if addkey:
+        match = re.search(rf"{addkey}[」】！？～＞：　 \s]*(.+)", infile_name)
+        if match:
+            infile_name = match.group(1)
 
     # 話数が含まれていたら削除
     infile_name = delete_episode_number(infile_name)
@@ -133,7 +134,9 @@ def extract_subtitle(infile_name, addkey):
 
 
 # 保存ファイル名を決定する
-def get_outfile_name(infile_name, addkey, outdir_path, title_mode, renban_mode):
+def get_outfile_name(
+    infile_name, addkey, outdir_path, title_mode, renban_mode, series_mode
+):
     # 拡張子を取る
     infile_name = re.sub(r"\.ts$", "", infile_name)
     # ディスカバリーによくある "(二)" が邪魔なので消去
@@ -172,6 +175,11 @@ def get_outfile_name(infile_name, addkey, outdir_path, title_mode, renban_mode):
     if renban:
         return f"#{renban:02d}.ts"
     # どちらもない
+    if series_mode and addkey:
+        # addkey より前は重複するので排除
+        match = re.search(rf"{addkey}[」】！？～＞：　 \s]*(.+)", infile_name)
+        if match:
+            infile_name = match.group(1)
     return f"{infile_name}.ts"
 
 
@@ -285,8 +293,9 @@ def safe_string(input_string):
         "<": "＜",
         ">": "＞",
     }
-    for b, a in replacechars.items():
-        input_string = input_string.replace(b, a)
+    if input_string:
+        for b, a in replacechars.items():
+            input_string = input_string.replace(b, a)
     return input_string
 
 
@@ -359,10 +368,11 @@ def ztoh(input_string):
         "９": "9",
         "　": " ",
     }
-    for b, a in replacechars.items():
-        input_string = input_string.replace(b, a)
-    # 連続した空白は１つにまとめる
-    input_string = re.sub(r"\s+", " ", input_string)
+    if input_string:
+        for b, a in replacechars.items():
+            input_string = input_string.replace(b, a)
+        # 連続した空白は１つにまとめる
+        input_string = re.sub(r"\s+", " ", input_string)
     return input_string
 
 
@@ -411,22 +421,29 @@ def main():
     if not infile_name:
         return
 
-    # 録画キーワード(addkey)はフォルダやファイル名に使用する場合があるので安全な全角にしておく
-    addkey = safe_string(args.addkey) if args.addkey else ""
-
-    # 録画ファイルの親ディレクトリパス
+    # 録画ファイルがあるディレクトリのパス
     parent_dir = os.path.dirname(args.filepath)
     if not parent_dir:
         return
 
+    # ファイル名が Genre_TItle.ts という形式なのでジャンル部分とタイトル部分に分割
+    genre = infile_name.split("_", 1)[0] if "_" in infile_name else ""
+    title = infile_name.split("_", 1)[1] if "_" in infile_name else infile_name
+
+    # ジャンル名を簡略化
+    if "教養" in genre:
+        genre = "教養"
+    elif "アニメ" in genre:
+        genre = "アニメ"
+
     # 保存先ディレクトリパス
-    outdir_path = get_outdir_path(parent_dir, args.genre, addkey, args.series)
+    outdir_path = get_outdir_path(parent_dir, genre, args.addkey, args.series)
     if not outdir_path:
         return
 
     # 保存ファイル名
     outfile_name = get_outfile_name(
-        infile_name, addkey, outdir_path, args.title, args.renban
+        title, args.addkey, outdir_path, args.title, args.renban, args.series
     )
     if not outfile_name:
         return
@@ -436,7 +453,7 @@ def main():
         move_file(args.filepath, outdir_path, outfile_name)
         update_folder_utime(parent_dir, args.genre, args.series)
     else:
-        print(" " + outdir_path + "\\" + outfile_name)
+        print("  " + outdir_path + "\\" + outfile_name)
 
 
 # エントリーポイント

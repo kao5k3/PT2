@@ -54,6 +54,7 @@ EDCBで録画後に実行するスクリプト。一度うっかりローカル�
 # インストール
 * Python3 をインストール
 * EDCB フォルダの下に Bat というサブフォルダを掘ってこのフォルダの中身を配置
+* RecName_Macro の設定を `$Genre_$Title2$.ts` に設定
 * EDCB(EpgTimer)を再起動
 
 # 使い方

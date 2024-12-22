@@ -23,5 +23,5 @@ if %m%==04 (
 ) else if %m%==12 (
 	set q=秋
 )
-C:\PT2\EDCB\Bat\RecPost.py -f "$FilePath$" -g "ドラマ" -a "!y!年!q!" -s
+C:\PT2\EDCB\Bat\RecPost.py -f "$FilePath$" -a "!y!年!q!" -s
 ENDLOCAL
