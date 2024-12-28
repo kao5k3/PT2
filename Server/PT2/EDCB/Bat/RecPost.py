@@ -9,8 +9,8 @@
 #
 # 前提条件
 #
-#  * 入力ファイル名は  $Genre$_$Title$.ts という形式になるよう  RecNameMacro
-#    で設定されていること
+#  * 入力ファイル名は  $Genre$_$Title$.ts 形式となるよう  RecNameMacro で設定
+#    されていること
 #  * Chat-GPT による副題抽出(-gオプション)を使う場合、環境変数 OPENAI_API_KEY
 #    に OpenAI の APIキー が設定されていること
 #
@@ -32,12 +32,11 @@
 #
 # -r | --renban
 #  ファイル名を連番にする
-#  -t オプションと併用可（連番＋副題 になる）
+#  -t オプションと併用すると 連番＋副題 (ex. "#01 サンプル.ts") になる
 #
 # -s | --series
-#  genre フォルダの下に、更に addkey フォルダを作成する
-#  有効であった場合は "ドラマ\相棒\" や "アニメ\サザエさん\"
-#  といったフォルダを作成し、その下にファイルを移動する
+#  ジャンルフォルダの下に addkey フォルダを作成しその下にファイルを移動する
+#  (ex. "ドラマ\相棒\" や "アニメ\サザエさん\")
 #
 # -t | --title
 #  ファイル名から副題らしき部分を抜き出して出力ファイル名にする
@@ -224,10 +223,10 @@ def get_outfile_name(
 
 # 出力先ディレクトリパスを決定する
 def get_outdir_path(path_to_store, genre, addkey, series_flag):
-    # genre 名のサブフォルダを作ってジャンル分け
+    # ジャンルでフォルダ分け
     if genre:
         path_to_store = os.path.join(path_to_store, genre)
-    # シリーズフラグがあれば更に予約キーワード(addkey) を追加
+    # シリーズフラグがあれば更に予約キーワード(addkey)でサブフォルダを掘る
     if series_flag and addkey:
         addkey = ztoh(addkey)
         addkey = safe_string(addkey)
@@ -296,8 +295,8 @@ def move_file(infile_path, outdir_path, outfile_name):
 
 
 # ジャンルフォルダの最終更新時刻を更新
-def update_folder_utime(parent_dir, genre, series_flag):
-    if not parent_dir or not genre or not series_flag:
+def update_folder_utime(parent_dir, genre):
+    if not parent_dir or not genre:
         return
     try:
         os.utime(os.path.join(parent_dir, genre), None)
@@ -482,10 +481,11 @@ def main():
     if not outfile_name:
         return
 
-    # 出力先へ移動しジャンルフォルダの最終更新時刻を更新
+    # 出力先へ移動
     if not args.debug:
         move_file(args.filepath, outdir_path, outfile_name)
-        update_folder_utime(parent_dir, args.genre, args.series)
+        # ジャンルフォルダの最終更新時刻を更新
+        update_folder_utime(parent_dir, genre)
     else:
         print("  " + outdir_path + "\\" + outfile_name)
 
