@@ -2,37 +2,45 @@
 # 説明
 #
 #  EDCB で録画後に実行するバッチプログラムから呼び出される Python スクリプト。
-#  ファイル名、予約キーワード、およびジャンルを引数に取り、録画ファイル（TSファイル）
-#  のファイル名に連番をつけたり、副題っぽい名前にしたり、ジャンルや予約キーワードで
-#  フォルダ分けしたりする。
+#
+#  ファイル名、予約キーワードと後述する各種引数を取り、録画ファイル（＝TSファイル）
+#  をジャンルや予約キーワードでフォルダ分けしたり、ファイル名に連番をつけたり、
+#  ファイル名を副題っぽい名前に変換したりする。
+#
+# 前提条件
+#
+#  * 入力ファイル名は  $Genre$_$Title$.ts という形式になるよう  RecNameMacro
+#    で設定されていること
+#  * Chat-GPT による副題抽出(-gオプション)を使う場合、環境変数 OPENAI_API_KEY
+#    に OpenAI の APIキー が設定されていること
 #
 # 引数
 #
 # -a | --addkey
-# 予約録画時のキーワード (ex. "相棒")
+#  予約録画時のキーワード (ex. "相棒")
 #
 # -d | --debug
-# デバッグモード
+#  デバッグモード
+#  出力先を標準出力するのみで実際には移動しない
 #
 # -f | --filepath
-# 入力ファイルパス (ex. "E:\Temp\Video\サンプル.ts")
+#  入力ファイルパス (ex. "E:\Temp\Video\サンプル.ts")
 #
-# -g | --genre
-# 番組のジャンル (ex. "ドラマ")
-# 入力ファイルがあるディレクトリの下に {ジャンル} フォルダを
-# 作成し、その下にファイルを移動する。
+# -g | --gpt
+#  ファイル名から副題を抜き出す際に Chat-GTP を使う
+#  -t オプションと併用時のみ有効
 #
 # -r | --renban
-# ファイル名を連番にする
-# -t と併用可（連番＋タイトルになる）
+#  ファイル名を連番にする
+#  -t オプションと併用可（連番＋副題 になる）
 #
 # -s | --series
-# genre フォルダの下に、更に addkey フォルダを作成する
-# 有効であった場合は "ドラマ\相棒\" や "アニメ\サザエさん\"
-# といったフォルダを作成し、その下にファイルを移動する
+#  genre フォルダの下に、更に addkey フォルダを作成する
+#  有効であった場合は "ドラマ\相棒\" や "アニメ\サザエさん\"
+#  といったフォルダを作成し、その下にファイルを移動する
 #
 # -t | --title
-# ファイル名をいい感じのタイトル名に変更する
+#  ファイル名から副題らしき部分を抜き出して出力ファイル名にする
 #
 
 import os
@@ -81,7 +89,7 @@ def extract_episode_number(infile_name, outdir_path):
     match = re.search(r"\#[0]*(\d+)", infile_name)
     if match:
         return int(match.group(1))
-    # ファイル名に 第○回 とか 第○話 がある場合
+    # ファイル名に 第○話 とかある場合
     match = re.search(r"第[0]*(\d+)[回話集]", infile_name)
     if match:
         return int(match.group(1))
@@ -89,7 +97,7 @@ def extract_episode_number(infile_name, outdir_path):
     match = re.search(r"（(\d+)）", infile_name)
     if match:
         return int(match.group(1))
-    # タイトルから抽出できなかった時は出力先フォルダを参照して連番になるよう番号を決める。
+    # タイトルから話数を抽出できなかった時は出力先フォルダを参照して連番になるよう番号を決める。
     renban = 1
     try:
         if os.path.exists(outdir_path):
@@ -105,16 +113,16 @@ def extract_episode_number(infile_name, outdir_path):
 
 # ファイル名から副題っぽい部分を抽出する
 def extract_subtitle(infile_name, addkey):
-    # 副題は addkey の後ろにあると想定し前部分を排除
+    # 副題は大概 addkey(≒主題) の後ろにあるので addkey より前の部分は削除
     if addkey:
         match = re.search(rf"{addkey}[」】！？～＞：　 \s]*(.+)", infile_name)
         if match:
             infile_name = match.group(1)
 
-    # 話数が含まれていたら削除
+    # 第１話 とか ＃０１ みたいな話数は邪魔なので削除
     infile_name = delete_episode_number(infile_name)
 
-    # 括弧があればその中身を副題として抜き出す
+    # 括弧書きされているものは大体副題なので確固内の文字列を抜き出す
     match = re.search(r"[「【](.*)", infile_name)
     if match:
         tmp = match.group(1)
@@ -124,7 +132,7 @@ def extract_subtitle(infile_name, addkey):
         if re.search(r"([^」】]+)", tmp):
             return re.search(r"([^」】]+)", tmp).group(1)
 
-    #  ：（コロン）／（スラッシュ） ▽ ▼があったらその後ろを副題として抜き出す
+    #  ：（コロン）／（スラッシュ） ▽ ▼が の後ろも大体副題なので抜き出す
     match = re.search(r"[：／▽▼](.*)", infile_name)
     if match:
         return match.group(1)
@@ -133,9 +141,37 @@ def extract_subtitle(infile_name, addkey):
     return addkey if not infile_name else infile_name
 
 
-# 保存ファイル名を決定する
+# Chat-GPT を使ってファイル名から副題を抽出する
+def extract_subtitle_with_gtp(infile_name):
+    from openai import OpenAI
+
+    prompt = f"次の番組名からタイトルと話数を消して副題だけを出力して。副題がなければタイトルだけ出力して。\n{infile_name}"
+    subtitle = ""
+
+    try:
+        client = OpenAI(
+            # organization=os.environ.get("OPENAI_ORGANIZATION"),
+            api_key=os.environ.get("OPENAI_API_KEY"),
+        )
+        response = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model="gpt-4o-mini",
+        )
+        subtitle = response.choices[0].message.content.strip()
+    except Exception:
+        pass
+
+    return subtitle
+
+
+# 出力ファイル名を決定する
 def get_outfile_name(
-    infile_name, addkey, outdir_path, title_mode, renban_mode, series_mode
+    infile_name, addkey, outdir_path, title_mode, renban_mode, series_mode, gpt_mode
 ):
     # 拡張子を取る
     infile_name = re.sub(r"\.ts$", "", infile_name)
@@ -155,8 +191,11 @@ def get_outfile_name(
     # ファイル名から副題を抽出
     title = ""
     if title_mode:
-        title = extract_subtitle(infile_name, addkey)
-        title = delete_episode_number(title)
+        if gpt_mode:
+            title = extract_subtitle_with_gtp(infile_name)
+        else:
+            title = extract_subtitle(infile_name, addkey)
+            title = delete_episode_number(title)
         if not title:
             title = addkey
 
@@ -183,7 +222,7 @@ def get_outfile_name(
     return f"{infile_name}.ts"
 
 
-# 保存先ディレクトリパスを決定する
+# 出力先ディレクトリパスを決定する
 def get_outdir_path(path_to_store, genre, addkey, series):
     # ジャンルが指定されていたならディレクトリパスにジャンル名を追加
     if genre:
@@ -217,7 +256,7 @@ def kanji_to_number_conversion(input_string):
     return input_string
 
 
-# ファイルを保存先に移動する
+# ファイルを出力先に移動する
 def move_file(infile_path, outdir_path, outfile_name):
     if not infile_path or not outdir_path or not outfile_name:
         return
@@ -260,14 +299,8 @@ def move_file(infile_path, outdir_path, outfile_name):
 def update_folder_utime(parent_dir, genre, series):
     if not parent_dir or not genre or not series:
         return
-    # ダミーファイルを作成→削除してフォルダの utime を更新する
-    dummyfile_path = os.path.join(parent_dir, genre, ".dummy")
     try:
-        if os.path.exists(dummyfile_path):
-            os.remove(dummyfile_path)
-        with open(dummyfile_path, "w"):
-            pass
-        os.remove(dummyfile_path)
+        os.utime(os.path.join(parent_dir, genre), None)
     except Exception:
         pass
 
@@ -378,40 +411,38 @@ def ztoh(input_string):
 
 # メインルーチン
 def main():
-    parser = argparse.ArgumentParser(
-        description="EDCB recording post-processing script."
-    )
+    parser = argparse.ArgumentParser(description="EDCB録画後処理スクリプト。")
     parser.add_argument(
         "-a",
         "--addkey",
         type=str,
-        help='Keyword used during reservation recording (e.g., "相棒")',
+        help='予約録画時に使用したキーワード (例: "相棒")',
     )
-    parser.add_argument("-d", "--debug", action="store_true", help="Debug mode")
+    parser.add_argument("-d", "--debug", action="store_true", help="デバッグモード")
     parser.add_argument(
         "-f",
         "--filepath",
         type=str,
         required=True,
-        help='Input file path (e.g., "E:\\Temp\\Video\\サンプル.ts")',
+        help='入力ファイルパス (例: "E:\\Temp\\Video\\サンプル.ts")',
     )
     parser.add_argument(
-        "-g", "--genre", type=str, help='Program genre (e.g., "ドラマ")'
+        "-g", "--gpt", action="store_true", help="タイトル名の変換に Chat-GPT を使う"
     )
     parser.add_argument(
-        "-r", "--renban", action="store_true", help="Make the file name a serial number"
+        "-r", "--renban", action="store_true", help="ファイル名に連番を付与する"
     )
     parser.add_argument(
         "-s",
         "--series",
         action="store_true",
-        help="Create an addkey folder under the genre folder",
+        help="ジャンルフォルダの下にaddkeyフォルダを作成する",
     )
     parser.add_argument(
         "-t",
         "--title",
         action="store_true",
-        help="Change the file name to a nice title name",
+        help="ファイル名をいい感じのタイトル名に変更する",
     )
 
     args = parser.parse_args()
@@ -436,19 +467,19 @@ def main():
     elif "アニメ" in genre:
         genre = "アニメ"
 
-    # 保存先ディレクトリパス
+    # 出力先ディレクトリパス
     outdir_path = get_outdir_path(parent_dir, genre, args.addkey, args.series)
     if not outdir_path:
         return
 
-    # 保存ファイル名
+    # 出力ファイル名
     outfile_name = get_outfile_name(
-        title, args.addkey, outdir_path, args.title, args.renban, args.series
+        title, args.addkey, outdir_path, args.title, args.renban, args.series, args.gpt
     )
     if not outfile_name:
         return
 
-    # 保存先へ移動しジャンルフォルダの最終更新時刻を更新
+    # 出力先へ移動しジャンルフォルダの最終更新時刻を更新
     if not args.debug:
         move_file(args.filepath, outdir_path, outfile_name)
         update_folder_utime(parent_dir, args.genre, args.series)

@@ -47,7 +47,7 @@ EDCBで録画後に実行するスクリプト。一度うっかりローカル�
     \Path\To\Video\スポーツ\速報！MotoGP\第13戦サンマリノGP.ts
 
 # 動作確認環境
-* Windows 7 Pro, Windows 10 Pro
+* Windows 7 Pro, 10 Pro, 11 Pro
 * Python 3.13.1
 * EpgTimer(xtne6f版)
 
@@ -56,6 +56,7 @@ EDCBで録画後に実行するスクリプト。一度うっかりローカル�
 * EDCB フォルダの下に Bat というサブフォルダを掘ってこのフォルダの中身を配置
 * RecName_Macro の設定を `$Genre$_$Title2$.ts` に設定
 * EDCB(EpgTimer)を再起動
+* Chat-GPT による副題抽出機能を使う場合は openai の Python パッケージをインストールし、環境変数 OPENAI_API_KEY に OpenAI の API キーを設定
 
 # 使い方
 予約時に録画後実行したいバッチファイルを選択

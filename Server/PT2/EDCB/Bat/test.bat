@@ -114,8 +114,11 @@ echo  シリーズ
 echo  シリーズ＋副題
 %RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t --debug
 
-echo  シリーズ＋副題＋連番
+echo  シリーズ＋連番＋副題
 %RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t -r --debug
+
+rem echo  シリーズ＋連番＋副題withGPT
+rem %RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t -r -g --debug
 
 set /p stdin="type any key to continue>"
 exit /b
