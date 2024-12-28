@@ -27,7 +27,7 @@
 #  入力ファイルパス (ex. "E:\Temp\Video\サンプル.ts")
 #
 # -g | --gpt
-#  ファイル名から副題を抜き出す際に Chat-GTP を使う
+#  ファイル名から副題を抜き出す際に ChatGPT を使う
 #  -t オプションと併用時のみ有効
 #
 # -r | --renban
@@ -141,8 +141,8 @@ def extract_subtitle(infile_name, addkey):
     return addkey if not infile_name else infile_name
 
 
-# Chat-GPT を使ってファイル名から副題を抽出する
-def extract_subtitle_with_gtp(infile_name):
+# ChatGPT でファイル名から副題を抽出する
+def extract_subtitle_with_gpt(infile_name):
     from openai import OpenAI
 
     prompt = f"次の番組名からタイトルと話数を消して副題だけを出力して。副題がなければタイトルだけ出力して。\n{infile_name}"
@@ -171,7 +171,7 @@ def extract_subtitle_with_gtp(infile_name):
 
 # 出力ファイル名を決定する
 def get_outfile_name(
-    infile_name, addkey, outdir_path, title_mode, renban_mode, series_mode, gpt_mode
+    infile_name, addkey, outdir_path, title_flag, renban_flag, series_flag, gpt_flag
 ):
     # 拡張子を取る
     infile_name = re.sub(r"\.ts$", "", infile_name)
@@ -190,9 +190,9 @@ def get_outfile_name(
 
     # ファイル名から副題を抽出
     title = ""
-    if title_mode:
-        if gpt_mode:
-            title = extract_subtitle_with_gtp(infile_name)
+    if title_flag:
+        if gpt_flag:
+            title = extract_subtitle_with_gpt(infile_name)
         else:
             title = extract_subtitle(infile_name, addkey)
             title = delete_episode_number(title)
@@ -201,7 +201,7 @@ def get_outfile_name(
 
     # ファイル名から連番を抽出
     renban = 0
-    if renban_mode:
+    if renban_flag:
         renban = extract_episode_number(infile_name, outdir_path)
 
     # 連番＋副題
@@ -213,9 +213,9 @@ def get_outfile_name(
     # 連番のみ
     if renban:
         return f"#{renban:02d}.ts"
-    # どちらもない
-    if series_mode and addkey:
-        # addkey より前は重複するので排除
+    # 連番と副題どちらもないが addkey でフォルダ分けはする
+    if series_flag and addkey:
+        # タイトルの addkey 部分はフォルダ名と重複するので排除
         match = re.search(rf"{addkey}[」】！？～＞：　 \s]*(.+)", infile_name)
         if match:
             infile_name = match.group(1)
@@ -223,12 +223,12 @@ def get_outfile_name(
 
 
 # 出力先ディレクトリパスを決定する
-def get_outdir_path(path_to_store, genre, addkey, series):
-    # ジャンルが指定されていたならディレクトリパスにジャンル名を追加
+def get_outdir_path(path_to_store, genre, addkey, series_flag):
+    # genre 名のサブフォルダを作ってジャンル分け
     if genre:
         path_to_store = os.path.join(path_to_store, genre)
     # シリーズフラグがあれば更に予約キーワード(addkey) を追加
-    if series and addkey:
+    if series_flag and addkey:
         addkey = ztoh(addkey)
         addkey = safe_string(addkey)
         path_to_store = os.path.join(path_to_store, addkey)
@@ -296,8 +296,8 @@ def move_file(infile_path, outdir_path, outfile_name):
 
 
 # ジャンルフォルダの最終更新時刻を更新
-def update_folder_utime(parent_dir, genre, series):
-    if not parent_dir or not genre or not series:
+def update_folder_utime(parent_dir, genre, series_flag):
+    if not parent_dir or not genre or not series_flag:
         return
     try:
         os.utime(os.path.join(parent_dir, genre), None)
@@ -427,7 +427,10 @@ def main():
         help='入力ファイルパス (例: "E:\\Temp\\Video\\サンプル.ts")',
     )
     parser.add_argument(
-        "-g", "--gpt", action="store_true", help="タイトル名の変換に Chat-GPT を使う"
+        "-g",
+        "--gpt",
+        action="store_true",
+        help="タイトルから副題を抽出する際 ChatGPT を使う",
     )
     parser.add_argument(
         "-r", "--renban", action="store_true", help="ファイル名に連番を付与する"
@@ -442,7 +445,7 @@ def main():
         "-t",
         "--title",
         action="store_true",
-        help="ファイル名をいい感じのタイトル名に変更する",
+        help="ファイル名を副題だけにする",
     )
 
     args = parser.parse_args()
