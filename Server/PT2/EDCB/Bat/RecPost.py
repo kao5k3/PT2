@@ -468,6 +468,22 @@ def main():
         genre = "教養"
     elif "アニメ" in genre:
         genre = "アニメ"
+    elif "趣味" in genre:
+        genre = "趣味"
+    elif "ニュース" in genre:
+        genre = "ニュース"
+    elif "ワイドショー" in genre:
+        genre = "ワイドショー"
+    elif "趣味" in genre:
+        genre = "趣味"
+    elif "スポーツ" in genre:
+        genre = "スポーツ"
+    elif "洋画" in genre:
+        genre = "映画"
+    elif "邦画" in genre:
+        genre = "映画"
+    elif "公演" in genre:
+        genre = "公演"
 
     # 出力先ディレクトリパス
     outdir_path = get_outdir_path(parent_dir, genre, args.addkey, args.series)

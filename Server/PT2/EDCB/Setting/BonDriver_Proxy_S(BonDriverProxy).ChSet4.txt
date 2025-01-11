@@ -25,45 +25,45 @@ BS03/TS2	ＢＳ釣りビジョン	BS Digital	0	5	4	17970	251	1	0	1	0
 BS05/TS0	ＷＯＷＯＷライブ	BS Digital	0	6	4	17488	192	1	0	1	0
 BS05/TS1	ＷＯＷＯＷシネマ	BS Digital	0	7	4	17489	193	1	0	1	0
 BS09/TS0	ＢＳ１１イレブン	BS Digital	0	8	4	16528	211	1	0	1	0
-BS09/TS2	ＢＳ１２トゥエルビ	BS Digital	0	10	4	16530	222	1	0	1	0
-BS13/TS0	ＢＳ日テレ	BS Digital	0	13	4	16592	141	1	0	1	0
-BS13/TS0	ＢＳ日テレ	BS Digital	0	13	4	16592	142	1	0	0	0
-BS13/TS0	ＢＳ日テレ	BS Digital	0	13	4	16592	143	1	0	0	0
-BS13/TS0	ＢＳ日テレ臨時	BS Digital	0	13	4	16592	144	161	0	0	0
-BS13/TS0	　	BS Digital	0	13	4	16592	744	192	0	0	0
-BS13/TS0	　	BS Digital	0	13	4	16592	745	192	0	0	0
-BS13/TS0	　	BS Digital	0	13	4	16592	746	192	0	0	0
-BS13/TS1	ＢＳフジ・１８１	BS Digital	0	14	4	16593	181	1	0	1	0
-BS13/TS1	ＢＳフジ・１８２	BS Digital	0	14	4	16593	182	1	0	0	0
-BS13/TS1	ＢＳフジ・１８３	BS Digital	0	14	4	16593	183	1	0	0	0
-BS13/TS1	ＢＳフジ・１８８	BS Digital	0	14	4	16593	188	161	0	0	0
-BS13/TS1	ＢＳフジ・１８９	BS Digital	0	14	4	16593	189	161	0	0	0
-BS13/TS1	ＢＳフジ・７８０	BS Digital	0	14	4	16593	780	192	0	0	0
-BS13/TS1	ＢＳフジ・７８１	BS Digital	0	14	4	16593	781	192	0	0	0
-BS13/TS2	放送大学テレビ	BS Digital	0	15	4	18130	231	1	0	1	0
-BS13/TS2	放送大学テレビ	BS Digital	0	15	4	18130	232	1	0	1	0
-BS13/TS2	放送大学ラジオ	BS Digital	0	15	4	18130	531	2	0	0	0
-BS15/TS1	ＮＨＫ　ＢＳ	BS Digital	0	16	4	16625	101	1	0	1	0
-BS15/TS1	ＮＨＫ　ＢＳ	BS Digital	0	16	4	16625	102	1	0	1	0
-BS15/TS1	－	BS Digital	0	16	4	16625	103	1	0	0	0
-BS15/TS1	ＮＨＫデータ１	BS Digital	0	16	4	16625	700	192	0	0	0
-BS15/TS1	ＮＨＫデータ２	BS Digital	0	16	4	16625	701	192	0	0	0
-BS15/TS1	７０７チャンネル	BS Digital	0	16	4	16625	707	192	0	0	0
-BS15/TS1	Ｄｐａダウンロード	BS Digital	0	16	4	16625	929	164	0	0	0
-BS15/TS2	スターチャンネル	BS Digital	0	17	4	16626	200	1	0	1	0
-BS15/TS2	スターチャンネル	BS Digital	0	17	4	16626	800	192	0	0	0
-BS19/TS0	Ｊ　ＳＰＯＲＴＳ　４	BS Digital	0	18	4	18224	245	1	0	1	0
-BS19/TS0	スカパー！ガイド	BS Digital	0	18	4	18224	849	192	0	0	0
-BS19/TS1	Ｊ　ＳＰＯＲＴＳ　１	BS Digital	0	19	4	18225	242	1	0	1	0
-BS19/TS2	Ｊ　ＳＰＯＲＴＳ　２	BS Digital	0	20	4	18226	243	1	0	1	0
-BS19/TS3	Ｊ　ＳＰＯＲＴＳ　３	BS Digital	0	21	4	18227	244	1	0	1	0
-BS21/TS0	ＷＯＷＯＷプラス	BS Digital	0	22	4	18256	252	1	0	1	0
-BS21/TS1	日本映画専門ｃｈ	BS Digital	0	23	4	18257	255	1	0	1	0
-BS21/TS2	グリーンチャンネル	BS Digital	0	24	4	18258	234	1	0	1	0
-BS23/TS0	ディズニーｃｈ	BS Digital	0	25	4	18288	256	1	0	1	0
-BS23/TS1	ＢＳよしもと	BS Digital	0	26	4	18801	265	1	0	1	0
-BS23/TS2	ＢＳＪａｐａｎｅｘｔ	BS Digital	0	27	4	18802	263	1	0	1	0
-BS23/TS3	ＢＳ松竹東急	BS Digital	0	28	4	18803	260	1	0	1	0
+BS09/TS2	ＢＳ１２トゥエルビ	BS Digital	0	9	4	16530	222	1	0	1	0
+BS13/TS0	ＢＳ日テレ	BS Digital	0	10	4	16592	141	1	0	1	0
+BS13/TS0	ＢＳ日テレ	BS Digital	0	10	4	16592	142	1	0	0	0
+BS13/TS0	ＢＳ日テレ	BS Digital	0	10	4	16592	143	1	0	0	0
+BS13/TS0	ＢＳ日テレ臨時	BS Digital	0	10	4	16592	144	161	0	0	0
+BS13/TS0	　	BS Digital	0	10	4	16592	744	192	0	0	0
+BS13/TS0	　	BS Digital	0	10	4	16592	745	192	0	0	0
+BS13/TS0	　	BS Digital	0	10	4	16592	746	192	0	0	0
+BS13/TS1	ＢＳフジ・１８１	BS Digital	0	11	4	16593	181	1	0	1	0
+BS13/TS1	ＢＳフジ・１８２	BS Digital	0	11	4	16593	182	1	0	0	0
+BS13/TS1	ＢＳフジ・１８３	BS Digital	0	11	4	16593	183	1	0	0	0
+BS13/TS1	ＢＳフジ・１８８	BS Digital	0	11	4	16593	188	161	0	0	0
+BS13/TS1	ＢＳフジ・１８９	BS Digital	0	11	4	16593	189	161	0	0	0
+BS13/TS1	ＢＳフジ・７８０	BS Digital	0	11	4	16593	780	192	0	0	0
+BS13/TS1	ＢＳフジ・７８１	BS Digital	0	11	4	16593	781	192	0	0	0
+BS13/TS2	放送大学テレビ	BS Digital	0	12	4	18130	231	1	0	1	0
+BS13/TS2	放送大学テレビ	BS Digital	0	12	4	18130	232	1	0	1	0
+BS13/TS2	放送大学ラジオ	BS Digital	0	12	4	18130	531	2	0	0	0
+BS15/TS1	ＮＨＫ　ＢＳ	BS Digital	0	13	4	16625	101	1	0	1	0
+BS15/TS1	ＮＨＫ　ＢＳ	BS Digital	0	13	4	16625	102	1	0	1	0
+BS15/TS1	－	BS Digital	0	13	4	16625	103	1	0	0	0
+BS15/TS1	ＮＨＫデータ１	BS Digital	0	13	4	16625	700	192	0	0	0
+BS15/TS1	ＮＨＫデータ２	BS Digital	0	13	4	16625	701	192	0	0	0
+BS15/TS1	７０７チャンネル	BS Digital	0	13	4	16625	707	192	0	0	0
+BS15/TS1	Ｄｐａダウンロード	BS Digital	0	13	4	16625	929	164	0	0	0
+BS15/TS2	ＢＳ１０スターｃｈ	BS Digital	0	14	4	16626	201	1	0	1	0
+BS15/TS2	ＢＳ１０スターｃｈ	BS Digital	0	14	4	16626	800	192	0	0	0
+BS15/TS3	ＢＳ１０	BS Digital	0	15	4	18675	200	1	0	1	0
+BS19/TS0	Ｊ　ＳＰＯＲＴＳ　４	BS Digital	0	16	4	18224	245	1	0	1	0
+BS19/TS0	スカパー！ガイド	BS Digital	0	16	4	18224	849	192	0	0	0
+BS19/TS1	Ｊ　ＳＰＯＲＴＳ　１	BS Digital	0	17	4	18225	242	1	0	1	0
+BS19/TS2	Ｊ　ＳＰＯＲＴＳ　２	BS Digital	0	18	4	18226	243	1	0	1	0
+BS19/TS3	Ｊ　ＳＰＯＲＴＳ　３	BS Digital	0	19	4	18227	244	1	0	1	0
+BS21/TS0	ＷＯＷＯＷプラス	BS Digital	0	20	4	18256	252	1	0	1	0
+BS21/TS1	日本映画専門ｃｈ	BS Digital	0	21	4	18257	255	1	0	1	0
+BS21/TS2	グリーンチャンネル	BS Digital	0	22	4	18258	234	1	0	1	0
+BS23/TS0	ディズニーｃｈ	BS Digital	0	23	4	18288	256	1	0	1	0
+BS23/TS1	ＢＳよしもと	BS Digital	0	24	4	18801	265	1	0	1	0
+BS23/TS3	ＢＳ松竹東急	BS Digital	0	25	4	18803	260	1	0	1	0
 ND02	-	スカパー！　ＣＳ１	1	0	6	24608	1	165	0	0	0
 ND02	ＴＢＳチャンネル１	スカパー！　ＣＳ１	1	0	6	24608	296	1	0	1	0
 ND02	テレ朝チャンネル１	スカパー！　ＣＳ１	1	0	6	24608	298	1	0	1	0
