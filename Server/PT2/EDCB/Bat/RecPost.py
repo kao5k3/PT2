@@ -93,7 +93,7 @@ def extract_episode_number(infile_name, outdir_path):
     if match:
         return int(match.group(1))
     # ファイル名に (1) とかある場合
-    match = re.search(r"（(\d+)）", infile_name)
+    match = re.search(r"\((\d+)\)", infile_name)
     if match:
         return int(match.group(1))
     # タイトルから話数を抽出できなかった時は出力先フォルダを参照して連番になるよう番号を決める。
@@ -113,16 +113,14 @@ def extract_episode_number(infile_name, outdir_path):
 # ファイル名から副題っぽい部分を抽出する
 def extract_subtitle(infile_name, addkey):
     # 副題は大概 addkey(≒主題) の後ろにあるので addkey より前の部分は削除
+    subtitle = infile_name
     if addkey:
         match = re.search(rf"{addkey}[」】！？～＞：　 \s]*(.+)", infile_name)
         if match:
-            infile_name = match.group(1)
-
-    # 第１話 とか ＃０１ みたいな話数は邪魔なので削除
-    infile_name = delete_episode_number(infile_name)
+            subtitle = match.group(1)
 
     # 括弧書きされているものは大体副題なので確固内の文字列を抜き出す
-    match = re.search(r"[「【](.*)", infile_name)
+    match = re.search(r"[「【](.*)", subtitle)
     if match:
         tmp = match.group(1)
         # 括弧の後ろにさらに括弧があるケースを考慮
@@ -132,12 +130,19 @@ def extract_subtitle(infile_name, addkey):
             return re.search(r"([^」】]+)", tmp).group(1)
 
     #  ：（コロン）／（スラッシュ） ▽ ▼が の後ろも大体副題なので抜き出す
-    match = re.search(r"[：／▽▼](.*)", infile_name)
+    match = re.search(r"[：／▽▼](.*)", subtitle)
     if match:
         return match.group(1)
 
+    # 副題が話数だけの場合は副題抽出を諦める
+    # if delete_episode_number(subtitle) == "":
+    #     return infile_name
+
     # 副題が抽出できなかった場合は addkey を副題とする
-    return addkey if not infile_name else infile_name
+    # return addkey if not subtitle else subtitle
+
+    # 副題が抽出できなかった場合はファイル名そのものを副題とする
+    return infile_name if not subtitle else subtitle
 
 
 # ChatGPT でファイル名から副題を抽出する
@@ -179,36 +184,36 @@ def get_outfile_name(
     # ディスカバリーで稀にある "(日)" も邪魔なので消去
     infile_name = re.sub(r"\(日\)$", "", infile_name)
 
-    # 半角と全角が混ざっていると面倒なので半角にする
+    # 半角と全角が混ざっていると面倒なので全部半角にする
     infile_name = ztoh(infile_name)
     addkey = ztoh(addkey)
 
-    # 記号はファイル名やフォルダ名前にも使える全角にする
+    # 記号はファイルやフォルダ名にも使える全角にする
     infile_name = safe_string(infile_name)
     addkey = safe_string(addkey)
 
     # ファイル名から副題を抽出
-    title = ""
+    subtitle = ""
     if title_flag:
         if gpt_flag:
-            title = extract_subtitle_with_gpt(infile_name)
+            subtitle = extract_subtitle_with_gpt(infile_name)
         else:
-            title = extract_subtitle(infile_name, addkey)
-            title = delete_episode_number(title)
-        if not title:
-            title = addkey
+            subtitle = extract_subtitle(infile_name, addkey)
+        if not subtitle:
+            subtitle = addkey
 
-    # ファイル名から連番を抽出
+    # ファイル名から連番を抽出 & 副題からは削除
     renban = 0
     if renban_flag:
         renban = extract_episode_number(infile_name, outdir_path)
+        subtitle = delete_episode_number(subtitle)
 
     # 連番＋副題
-    if renban and title:
-        return f"#{renban:02d} {title}.ts"
+    if renban and subtitle:
+        return f"#{renban:02d} {subtitle}.ts"
     # 副題のみ
-    if title:
-        return f"{title}.ts"
+    if subtitle:
+        return f"{subtitle}.ts"
     # 連番のみ
     if renban:
         return f"#{renban:02d}.ts"
@@ -304,34 +309,32 @@ def update_folder_utime(parent_dir, genre):
         pass
 
 
-# 半角の記号をファイルやフォルダ名に使える全角に変更
+# Windowsでファイル名やフォルダ名に使えない半角記号+αを全角に変換
 def safe_string(input_string):
     replacechars = {
-        "(": "（",
-        ")": "）",
+        "<": "＜",
+        ">": "＞",
         ":": "：",
-        ";": "；",
+        '"': "“",
         "/": "／",
         "\\": "￥",
         "|": "｜",
-        ",": "，",
-        "*": "＊",
-        "-": "－",
-        "~": "～",
         "?": "？",
+        "*": "＊",
+        "~": "～",
         "!": "！",
-        "&": "＆",
-        '"': "”",
-        "<": "＜",
-        ">": "＞",
+        "-": "－",
     }
     if input_string:
+        # "" で囲まれた文字列があれば前後の " を全角の “ ” に変換
+        input_string = re.sub(r'"(.*?)"', r"“\1”", input_string)
+        # その他は１文字単位で変換
         for b, a in replacechars.items():
             input_string = input_string.replace(b, a)
     return input_string
 
 
-# 全角（英数＋＃＋スペース）を半角に変更(ＡＢＣ　＃１２３ → ABC #123)
+# 全角英数記号文字を半角に変更(ＡＢＣ　＃１２３ → ABC #123)
 def ztoh(input_string):
     replacechars = {
         "Ａ": "A",
@@ -386,8 +389,6 @@ def ztoh(input_string):
         "ｘ": "x",
         "ｙ": "y",
         "ｚ": "z",
-        "＃": "#",
-        "♯": "#",
         "０": "0",
         "１": "1",
         "２": "2",
@@ -399,6 +400,40 @@ def ztoh(input_string):
         "８": "8",
         "９": "9",
         "　": " ",
+        "！": "!",
+        "“": '"',
+        "”": '"',
+        "＃": "#",
+        "♯": "#",
+        "＄": "$",
+        "％": "%",
+        "＆": "&",
+        "’": "'",
+        "（": "(",
+        "）": ")",
+        "＊": "*",
+        "＋": "+",
+        "，": ",",
+        "－": "-",
+        "．": ".",
+        "／": "/",
+        "：": ":",
+        "；": ";",
+        "＜": "<",
+        "＝": "=",
+        "＞": ">",
+        "？": "?",
+        "＠": "@",
+        "［": "[",
+        "￥": "\\",
+        "］": "]",
+        "＾": "^",
+        "＿": "_",
+        "‘": "`",
+        "｛": "{",
+        "｜": "|",
+        "｝": "}",
+        "～": "~",
     }
     if input_string:
         for b, a in replacechars.items():
@@ -472,8 +507,8 @@ def main():
         genre = "趣味"
     elif "ニュース" in genre:
         genre = "ニュース"
-    elif "ワイドショー" in genre:
-        genre = "ワイドショー"
+    elif "情報" in genre:
+        genre = "情報"
     elif "趣味" in genre:
         genre = "趣味"
     elif "スポーツ" in genre:
@@ -503,7 +538,11 @@ def main():
         # ジャンルフォルダの最終更新時刻を更新
         update_folder_utime(parent_dir, genre)
     else:
-        print("  " + outdir_path + "\\" + outfile_name)
+        print("-" if not args.series else "s", end="")
+        print("-" if not args.title else "t", end="")
+        print("-" if not args.renban else "r", end="\t")
+        outdir_path = outdir_path.replace(parent_dir, "").lstrip(os.sep)
+        print(outdir_path + os.sep + "  =>  " + outfile_name)
 
 
 # エントリーポイント
