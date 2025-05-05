@@ -37,7 +37,7 @@
 ‚a‚rƒtƒWE‚V‚W‚O	BS Digital	4	16593	780	192	0	0	0
 ‚a‚rƒtƒWE‚V‚W‚P	BS Digital	4	16593	781	192	0	0	0
 ‚m‚g‚j@‚a‚r	BS Digital	4	16625	101	1	0	1	1
-‚m‚g‚j@‚a‚r	BS Digital	4	16625	102	1	0	1	1
+‚m‚g‚j@‚a‚r	BS Digital	4	16625	102	1	0	0	1
 |	BS Digital	4	16625	103	1	0	0	1
 ‚m‚g‚jƒf[ƒ^‚P	BS Digital	4	16625	700	192	0	0	0
 ‚m‚g‚jƒf[ƒ^‚Q	BS Digital	4	16625	701	192	0	0	0
