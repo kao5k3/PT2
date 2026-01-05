@@ -331,6 +331,10 @@ def safe_string(input_string):
         # その他は１文字単位で変換
         for b, a in replacechars.items():
             input_string = input_string.replace(b, a)
+        # ！？ を ⁉ に置換
+        input_string = input_string.replace("！？", "⁉")
+        # ！！ を ‼ に置換
+        input_string = input_string.replace("！！", "‼")
     return input_string
 
 
