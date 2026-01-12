@@ -74,6 +74,9 @@ def delete_episode_number(input_string):
         "",
         input_string,
     )
+    # 半角括弧の話数も削除
+    input_string = re.sub(r"^\(\d+\)[　\s]*", "", input_string)
+    input_string = re.sub(r"[　\s]+\(\d+\)[　\s]*", "", input_string)
     return input_string
 
 

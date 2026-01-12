@@ -2,6 +2,9 @@
 
 set RECPOST="%~dp0\RecPost.py"
 
+set FILEPATH="D:\Videos\ƒeƒŒƒr\ƒhƒ‰ƒ}_–LbŒZ’íIi‚QjŠè‚¢‚Ìà.ts"
+set ADDKEY="–LbŒZ’íI"
+call :SubRoutine
 
 set FILEPATH="D:\Videos\ƒeƒŒƒr\‰¹Šy_‚o‚…‚Ž‚”‚ˆ‚‚•‚“‚… ‚n‚m‚d ‚l‚`‚m ‚k‚h‚u‚d ‚Q‚O‚Q‚S ""‚k‚‚•c.ts"
 set ADDKEY=""
@@ -124,19 +127,19 @@ rem ============================================================================
 echo %FILEPATH%
 
 rem ƒfƒtƒHƒ‹ƒg
-%RECPOST% -f %FILEPATH% -a %ADDKEY% --debug
+python %RECPOST% -f %FILEPATH% -a %ADDKEY% --debug
 
 rem ƒVƒŠ[ƒY
-%RECPOST% -f %FILEPATH% -a %ADDKEY% -s --debug
+python %RECPOST% -f %FILEPATH% -a %ADDKEY% -s --debug
 
 rem ƒVƒŠ[ƒY{•›‘è
-%RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t --debug
+python %RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t --debug
 
 rem ƒVƒŠ[ƒY{˜A”Ô{•›‘è
-%RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t -r --debug
+python %RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t -r --debug
 
 rem ƒVƒŠ[ƒY{˜A”Ô{•›‘èwithGPT
-rem %RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t -r -g --debug
+rem python %RECPOST% -f %FILEPATH% -a %ADDKEY% -s -t -r -g --debug
 
 set /p stdin="type return key to continue>"
 echo.
